@@ -44,7 +44,7 @@ class ModeChoices(models.TextChoices):
 
 class ArchiveFileChoices(models.TextChoices):
     """
-    Settings to control creation of an archive PDF file
+    Settings to skip control creation of an archive PDF file
     """
 
     NEVER = ("never", _("never"))

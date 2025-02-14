@@ -11,7 +11,7 @@ from documents.parsers import DocumentParser
 from documents.parsers import ParseError
 from documents.parsers import make_thumbnail_from_pdf
 from documents.utils import maybe_override_pixel_limit
-from documents.utils import run_subprocess
+from documents.utils import run_subprocess, copy_file_with_basic_stats
 from paperless.config import OcrConfig
 from paperless.models import ArchiveFileChoices
 from paperless.models import CleanChoices
@@ -396,6 +396,13 @@ class RasterisedDocumentParser(DocumentParser):
             )
             if original_has_text:
                 self.text = text_original
+
+            # The user does not want to skip the creation of the archive file,
+            # so copy the original
+            if self.settings.skip_archive_file != ArchiveFileChoices.ALWAYS:
+                copy_file_with_basic_stats(document_path, archive_path)
+                self.archive_path = archive_path
+
         except SubprocessOutputError as e:
             if "Ghostscript PDF/A rendering" in str(e):
                 self.log.warning(
